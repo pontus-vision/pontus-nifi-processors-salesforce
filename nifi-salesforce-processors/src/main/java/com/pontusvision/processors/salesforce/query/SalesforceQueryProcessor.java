@@ -44,8 +44,6 @@ public class SalesforceQueryProcessor
 
   //https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_query.htm
 
-  private static final String SALESFORCE_OP = "query";
-
   public static final PropertyDescriptor SOQL = new PropertyDescriptor
       .Builder().name("SOQL Query")
                 .description("Salesforce.com SOQL that will be perform on the Salesforce.com instance.")
@@ -54,11 +52,6 @@ public class SalesforceQueryProcessor
                 .required(true)
                 .build();
 
-  //  @Override
-  //  protected String getEndPoint(ProcessContext context, FlowFile flowFile)
-  //  {
-  //    return SALESFORCE_OP + "/?q=" + context.getProperty(SOQL).evaluateAttributeExpressions(flowFile).getValue();
-  //  }
 
   @Override
   protected void init(final ProcessorInitializationContext context)
@@ -85,7 +78,6 @@ public class SalesforceQueryProcessor
                                  SalesforceUserPassAuthentication.class);
     }
 
-    getLogger().info("Call Salesforce.com Query API.");
     try
     {
       ForceApi api = sfAuthService.getForceApi();
@@ -93,14 +85,20 @@ public class SalesforceQueryProcessor
       String queryStr = context.getProperty(SOQL).evaluateAttributeExpressions(flowFile)
                                .getValue();
       QueryResult<String> resp = api.query(queryStr,String.class);
+      getLogger().info("Called Salesforce.com Query API with the following query:" + queryStr);
 
       FlowFile ff = flowFile;
 
       do
       {
-
         final QueryResult<String> queryResult = resp;
         ff = session.write(ff, outputStream -> outputStream.write(queryResult.getRawResults().getBytes()));
+
+        ff = session.putAttribute(ff,"salesforce_api_url", sfAuthService.getApiEndpoint());
+        ff = session.putAttribute(ff,"salesforce_api_user", sfAuthService.getApiConfig().getUsername());
+        ff = session.putAttribute(ff,"salesforce_api_client_id", sfAuthService.getApiConfig().getClientId());
+
+
         session.transfer(ff, REL_SUCCESS);
 
         if (!resp.isDone())

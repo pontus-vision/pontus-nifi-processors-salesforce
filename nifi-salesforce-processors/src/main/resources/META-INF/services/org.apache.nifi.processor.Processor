@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-com.pontusvision.processors.salesforce.GenerateSOQL
+#com.pontusvision.processors.salesforce.GenerateSOQL
 com.pontusvision.processors.salesforce.GeneratePhoenixCreateTable
 com.pontusvision.processors.salesforce.SalesforceStreamingTopicAPI
 com.pontusvision.processors.salesforce.organization.SalesforceOrganizationLimitsProcessor

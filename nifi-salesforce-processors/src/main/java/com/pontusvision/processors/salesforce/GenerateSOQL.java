@@ -105,7 +105,7 @@ public class GenerateSOQL extends AbstractSalesforceRESTOperation {
 
                 StringBuffer buffer = new StringBuffer();
                 buffer.append(context.getProperty(SALESFORCE_SERVER_INSTANCE).evaluateAttributeExpressions(flowFile).getValue());
-                buffer.append("/services/data/").append(AbstractSalesforceRESTOperation.getAPIVer(sfAuthService)).append("/queryAll/?q=");
+//                buffer.append("/services/data/").append(AbstractSalesforceRESTOperation.getAPIVer(sfAuthService)).append("/queryAll/?q=");
                 buffer.append("SELECT ");
 
                 //Loops through the fields and builds the SOQL

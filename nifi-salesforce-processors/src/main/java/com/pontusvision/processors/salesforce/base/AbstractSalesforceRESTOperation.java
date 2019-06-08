@@ -59,43 +59,23 @@ public class AbstractSalesforceRESTOperation
       .description("Operation failed")
       .build();
 
-  public static final String DEFAULT_SALESFORCE_URL_BASE = "https://test.salesforce.com/";
-
-  public static final PropertyDescriptor SALESFORCE_URL_BASE = new PropertyDescriptor.Builder()
-      .name("Salesforce Base URL")
-      .description("URL for API Calls (post authentication)")
-      .required(true)
-      .defaultValue(DEFAULT_SALESFORCE_URL_BASE)
-      .addValidator(StandardValidators.createURLorFileValidator())
-      .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
-      .build();
 
 
-  public static final String RESPONSE_JSON = "json";
-  public static final String RESPONSE_XML  = "xml";
-
-  protected String                   baseURL = null;
-  protected String                   apiVer  = null;
   protected List<PropertyDescriptor> descriptors;
 
   protected Set<Relationship> relationships;
 
   protected SalesforceUserPassAuthentication sfAuthService = null;
 
-  private final String salesforceOp = "limits";
-
   protected String getEndPoint(ProcessContext context, FlowFile flowFile)
   {
-    return salesforceOp;
+    return "";
   }
 
   @Override
   public void onPropertyModified(final PropertyDescriptor descriptor, final String oldValue, final String newValue)
   {
     sfAuthService = null;
-    baseURL = null;
-    apiVer = null;
-
   }
 
   @Override
@@ -129,21 +109,6 @@ public class AbstractSalesforceRESTOperation
     getLogger().info("Call Salesforce.com REST API.");
     try
     {
-//      String url = generateSalesforceURL(context, flowFile);
-//
-//
-//      final String responseJson = sendGet(url);
-//      if (responseJson == null){
-//        sfAuthService.authenticate();
-//        url = generateSalesforceURL(context, flowFile);
-//        sendGet(url);
-//      }
-//
-//      if (responseJson == null)
-//      {
-//
-//        throw new Exception("Failed to receive data from the server; URL is " + url);
-//      }
       ForceApi api = sfAuthService.getForceApi();
 
       ResourceRepresentation resp = api.get(getEndPoint(context, flowFile));
@@ -177,144 +142,6 @@ public class AbstractSalesforceRESTOperation
 
 
 
-  // HTTP GET request
-  protected String sendGet( String url) throws Exception
-  {
-
-    URL                obj = new URL(url);
-    HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-
-    // optional default is GET
-    con.setRequestMethod("GET");
-
-    //Add headers
-    con.setRequestProperty("Authorization", "Bearer " + sfAuthService.getSalesforceAccessToken());
-    con.setRequestProperty("Content-Type",
-        "application/x-www-form-urlencoded");
-    //    con.setRequestProperty("Accept", responseFormat);
-
-    int responseCode = con.getResponseCode();
-    getLogger().info("\nSending 'GET' request to URL : " + url);
-    getLogger().info("Response Code : " + responseCode);
-
-    if (responseCode == 200)
-    {
-      BufferedReader in = new BufferedReader(
-          new InputStreamReader(con.getInputStream()));
-      String       inputLine;
-      StringBuffer response = new StringBuffer();
-
-      while ((inputLine = in.readLine()) != null)
-      {
-        response.append(inputLine);
-      }
-      in.close();
-
-      //print result
-      getLogger().debug(response.toString());
-      return response.toString();
-    }
-    return null;
 
 
-  }
-
-  //  // HTTP POST request
-  //  protected String sendPost(String accessToken, String responseFormat, String url) throws Exception
-  //  {
-  //
-  //    URL                obj = new URL(url);
-  //    HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-  //
-  //    //add reuqest header
-  //    con.setRequestMethod("POST");
-  //    con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-  //    con.setRequestProperty("Authorization: Bearer ", accessToken);
-  //    con.setRequestProperty("Content-Type",
-  //        "application/x-www-form-urlencoded");
-  //
-  //    String urlParameters = "sn=C02G8416DRJM&cn=&locale=&caller=&num=12345";
-  //
-  //    // Send post request
-  //    con.setDoOutput(true);
-  //    DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-  //    wr.writeBytes(urlParameters);
-  //    wr.flush();
-  //    wr.close();
-  //
-  //    int responseCode = con.getResponseCode();
-  //    System.out.println("\nSending 'POST' request to URL : " + url);
-  //    System.out.println("Post parameters : " + urlParameters);
-  //    System.out.println("Response Code : " + responseCode);
-  //
-  //    BufferedReader in = new BufferedReader(
-  //        new InputStreamReader(con.getInputStream()));
-  //    String       inputLine;
-  //    StringBuffer response = new StringBuffer();
-  //
-  //    while ((inputLine = in.readLine()) != null)
-  //    {
-  //      response.append(inputLine);
-  //    }
-  //    in.close();
-  //
-  //    //print result
-  //    System.out.println(response.toString());
-  //    return response.toString();
-  //  }
-
-  public static String getBaseURL(SalesforceUserPassAuthentication auth) throws UnsupportedEncodingException
-  {
-
-//    String url = auth.getResponseAttrib("instance_url");
-
-    String url = auth.getApiEndpoint();
-
-    return java.net.URLDecoder.decode(url, StandardCharsets.UTF_8.name());
-
-  }
-
-  public static String getAPIVer(SalesforceUserPassAuthentication auth)
-  {
-//    return context.getProperty(SALESFORCE_VERSION).evaluateAttributeExpressions(flowFile).getValue();
-
-    return auth.getApiConfig().getApiVersionString();
-  }
-
-  protected String generateSalesforceURL(ProcessContext context,
-                                         FlowFile flowFile)
-      throws UnsupportedEncodingException, ProcessException
-  {
-    if (baseURL == null)
-    {
-      baseURL = getBaseURL(sfAuthService);
-    }
-
-    if (apiVer == null)
-    {
-      apiVer = getAPIVer(sfAuthService);
-    }
-
-    StringBuilder url = new StringBuilder();
-    url.append(baseURL);
-    if (!baseURL.endsWith("/"))
-    {
-      url.append("/");
-    }
-
-    url.append("services/data/");
-    url.append(apiVer);
-    url.append("/");
-    String endpoint = getEndPoint(context, flowFile);
-
-    url.append(endpoint);
-
-    if (!endpoint.endsWith("/"))
-    {
-      url.append("/");
-    }
-
-    return url.toString(); //URLEncoder.encode(url.toString(), "UTF-8");
-
-  }
 }
