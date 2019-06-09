@@ -54,6 +54,11 @@ public class AbstractSalesforceRESTOperation
       .description("Operation completed successfully")
       .build();
 
+  public static final Relationship REL_ORIGINAL = new Relationship.Builder()
+      .name("original")
+      .description("Original FlowFile")
+      .build();
+
   public static final Relationship REL_FAILURE = new Relationship.Builder()
       .name("failure")
       .description("Operation failed")
@@ -137,6 +142,7 @@ public class AbstractSalesforceRESTOperation
     final Set<Relationship> relationships = new HashSet<Relationship>();
     relationships.add(REL_SUCCESS);
     relationships.add(REL_FAILURE);
+    relationships.add(REL_ORIGINAL);
     this.relationships = Collections.unmodifiableSet(relationships);
   }
 

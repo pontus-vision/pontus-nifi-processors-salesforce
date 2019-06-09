@@ -107,6 +107,9 @@ public class SalesforceQueryProcessor
         }
 
       }while (!resp.isDone());
+
+      session.transfer(flowFile, REL_ORIGINAL);
+
     }
     catch (Exception ex)
     {
