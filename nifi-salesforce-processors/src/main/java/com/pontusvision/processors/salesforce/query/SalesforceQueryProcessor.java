@@ -77,6 +77,7 @@ public class SalesforceQueryProcessor
                              .asControllerService(
                                  SalesforceUserPassAuthentication.class);
     }
+    FlowFile ff = null ;
 
     try
     {
@@ -87,7 +88,6 @@ public class SalesforceQueryProcessor
       QueryResult<String> resp = api.query(queryStr,String.class);
       getLogger().info("Called Salesforce.com Query API with the following query:" + queryStr);
 
-      FlowFile ff ;
 
       do
       {
@@ -102,7 +102,7 @@ public class SalesforceQueryProcessor
 
         session.transfer(ff, REL_SUCCESS);
         session.adjustCounter("salesforce.total_count", queryResult.getTotalSize(),false);
-        session.commit();
+//        session.commit();
 
         if (!resp.isDone())
         {
@@ -117,6 +117,10 @@ public class SalesforceQueryProcessor
     catch (Exception ex)
     {
       getLogger().error(ex.getMessage());
+      if (ff != null)
+      {
+        session.remove(ff);
+      }
       session.transfer(flowFile, REL_FAILURE);
     }
   }
