@@ -87,11 +87,12 @@ public class SalesforceQueryProcessor
       QueryResult<String> resp = api.query(queryStr,String.class);
       getLogger().info("Called Salesforce.com Query API with the following query:" + queryStr);
 
-      FlowFile ff = flowFile;
+      FlowFile ff ;
 
       do
       {
         final QueryResult<String> queryResult = resp;
+        ff = session.create(flowFile);
         ff = session.write(ff, outputStream -> outputStream.write(queryResult.getRawResults().getBytes()));
 
         ff = session.putAttribute(ff,"salesforce_api_url", sfAuthService.getApiEndpoint());
@@ -100,6 +101,8 @@ public class SalesforceQueryProcessor
 
 
         session.transfer(ff, REL_SUCCESS);
+        session.adjustCounter("salesforce.total_count", queryResult.getTotalSize(),false);
+        session.commit();
 
         if (!resp.isDone())
         {
