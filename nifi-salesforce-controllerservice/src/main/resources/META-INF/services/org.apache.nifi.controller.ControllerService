@@ -13,3 +13,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 com.pontusvision.nifi.salesforce.SalesforceUserPassAuthenticationService
+com.pontusvision.nifi.salesforce.SalesforceUserPassAuthenticationServiceSecretFiles
