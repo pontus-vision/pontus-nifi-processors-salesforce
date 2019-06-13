@@ -52,8 +52,8 @@ public class SalesforceUserPassAuthenticationService
   //Salesforce.com Documentation around this authentication flow
   //https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_understanding_username_password_oauth_flow.htm
 
-  private final String GRANT_TYPE  = "password";
-  private JSONObject sfResponse;
+  protected final String GRANT_TYPE  = "password";
+  protected JSONObject sfResponse;
 
   //TODO: create a custom validator. Make sure the user is entering a URL and it is using HTTPS which is required by Salesforce.
   public static final PropertyDescriptor AUTH_ENDPOINT = new PropertyDescriptor
@@ -130,7 +130,7 @@ public class SalesforceUserPassAuthenticationService
       .build();
 
 
-  private static final List<PropertyDescriptor> properties;
+  protected static  List<PropertyDescriptor> properties;
 
   static
   {
@@ -145,17 +145,10 @@ public class SalesforceUserPassAuthenticationService
     properties = Collections.unmodifiableList(props);
   }
 
-  private String clientId;
-  private String clientSecret;
-  private String userName;
-  private String password;
-  private String authEndpoint;
-  private String apiVersion;
-  private int apiTimeout;
 
-  private com.force.api.ApiConfig apiConfig;
+  protected com.force.api.ApiConfig apiConfig;
 
-  private ForceApi forceApi;
+  protected ForceApi forceApi;
 
   @Override
   protected List<PropertyDescriptor> getSupportedPropertyDescriptors()
@@ -173,40 +166,30 @@ public class SalesforceUserPassAuthenticationService
 
     this.apiConfig = new ApiConfig();
 
-    this.clientId = context.getProperty(CLIENT_ID).evaluateAttributeExpressions().getValue();
-    this.apiConfig.setClientId(this.clientId);
+    String clientId = context.getProperty(CLIENT_ID).evaluateAttributeExpressions().getValue();
+    this.apiConfig.setClientId(clientId);
 
-    this.clientSecret = context.getProperty(CLIENT_SECRET).evaluateAttributeExpressions().getValue();
-    this.apiConfig.setClientSecret(this.clientSecret);
+    String clientSecret = context.getProperty(CLIENT_SECRET).evaluateAttributeExpressions().getValue();
+    this.apiConfig.setClientSecret(clientSecret);
 
-//    try
-//    {
-//      this.userName = URLEncoder
-//          .encode(context.getProperty(USERNAME).evaluateAttributeExpressions().getValue(), "UTF-8");
-//    }
-//    catch (UnsupportedEncodingException use)
-//    {
-//      getLogger().error(use.getMessage());
-      this.userName = context.getProperty(USERNAME).evaluateAttributeExpressions().getValue();
-//    }
-
-    this.apiConfig.setUsername(this.userName);
+    String userName = context.getProperty(USERNAME).evaluateAttributeExpressions().getValue();
+    this.apiConfig.setUsername(userName);
 
 
-    this.password = context.getProperty(PASSWORD).evaluateAttributeExpressions().getValue();
-    this.apiConfig.setPassword(this.password);
+    String password = context.getProperty(PASSWORD).evaluateAttributeExpressions().getValue();
+    this.apiConfig.setPassword(password);
 
-    this.authEndpoint = context.getProperty(AUTH_ENDPOINT).evaluateAttributeExpressions().getValue();
-    this.apiConfig.setLoginEndpoint(this.authEndpoint);
+    String authEndpoint = context.getProperty(AUTH_ENDPOINT).evaluateAttributeExpressions().getValue();
+    this.apiConfig.setLoginEndpoint(authEndpoint);
 
-    this.apiVersion =  context.getProperty(SALESFORCE_VERSION).evaluateAttributeExpressions().getValue();
-    this.apiConfig.setApiVersionString(this.apiVersion);
+    String apiVersion =  context.getProperty(SALESFORCE_VERSION).evaluateAttributeExpressions().getValue();
+    this.apiConfig.setApiVersionString(apiVersion);
 
-    this.apiTimeout = context.getProperty(SALESFORCE_API_TIMEOUT_MS).evaluateAttributeExpressions().asInteger();
-    this.apiConfig.setRequestTimeout(this.apiTimeout);
+    int apiTimeout = context.getProperty(SALESFORCE_API_TIMEOUT_MS).evaluateAttributeExpressions().asInteger();
+    this.apiConfig.setRequestTimeout(apiTimeout);
 
     this.forceApi = new ForceApi(this.apiConfig);
-//    authenticate();
+
   }
 
 
@@ -223,83 +206,6 @@ public class SalesforceUserPassAuthenticationService
     }
   }
 
-  public void authenticate() throws InitializationException
-  {
-
-    StringBuilder requestBody = new StringBuilder();
-    requestBody.append("grant_type=");
-    requestBody.append(GRANT_TYPE);
-    requestBody.append("&client_id=");
-    requestBody.append(this.clientId);
-    requestBody.append("&client_secret=");
-    requestBody.append(this.clientSecret);
-    requestBody.append("&username=");
-    requestBody.append(this.userName);
-
-    requestBody.append("&password=");
-    requestBody.append(this.password);
-    //requestBody.append(context.getProperty(USER_SECURITY_TOKEN).evaluateAttributeExpressions().getValue());
-
-    try
-    {
-      URL                obj = new URL(this.authEndpoint);
-      HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-
-      //add request header
-      con.setRequestMethod("POST");
-      con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-      // Send post request
-      con.setDoOutput(true);
-      DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-      wr.writeBytes(requestBody.toString());
-      wr.flush();
-      wr.close();
-
-      int responseCode = con.getResponseCode();
-
-      if (responseCode == 200)
-      {
-
-        BufferedReader in = new BufferedReader(
-            new InputStreamReader(con.getInputStream()));
-        String       inputLine;
-        StringBuffer response = new StringBuffer();
-
-        while ((inputLine = in.readLine()) != null)
-        {
-          response.append(inputLine);
-        }
-        in.close();
-
-        //print result
-        //            System.out.println(response.toString());
-        //            getLogger().info("Salesforce.com Auth Response: " + response.toString());
-
-        //Parse the response and attempt to get the Salesforce.com access_token
-        sfResponse = new JSONObject(response.toString());
-
-        if (sfResponse.get("access_token") != null)
-        {
-          getLogger().info("Salesforce.com Access Token received.");
-        }
-        else
-        {
-          throw new Exception("Salesforce.com: Failed to find  access_token  " );
-        }
-      }
-      else
-      {
-        throw new Exception("Salesforce.com:  Invalid Response; response code  " + responseCode + " " + con.getResponseMessage());
-      }
-
-    }
-    catch (Exception ex)
-    {
-      getLogger().error(ex.getMessage());
-      throw new InitializationException(ex);
-    }
-  }
 
   @Override
   public ForceApi getForceApi()
@@ -316,29 +222,13 @@ public class SalesforceUserPassAuthenticationService
   @Override
   public String getSalesforceAccessToken()
   {
-//    return getResponseAttrib("access_token");
     return forceApi.getSession().getAccessToken();
   }
 
   public String getApiEndpoint()
   {
-    //    return getResponseAttrib("access_token");
     return forceApi.getSession().getApiEndpoint();
   }
 
-  //  public String getResponseAttrib(String attrib) throws ProcessException
-//  {
-//
-//    forceApi.getSession().getApiEndpoint()
-//    if (this.sfResponse == null)
-//    {
-//      throw new ProcessException("Salesforce.com:  Invalid response; please re-try authentication.");
-//    }
-//    if (this.sfResponse.get(attrib) == null)
-//    {
-//      throw new ProcessException("Salesforce.com:  Unable to find attribute " + attrib);
-//    }
-//    return this.sfResponse.getString(attrib);
-//  }
 
 }
