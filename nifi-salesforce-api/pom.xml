@@ -26,6 +26,7 @@
     <packaging>jar</packaging>
 
     <dependencies>
+
         <dependency>
             <groupId>com.pontusvision.salesforce</groupId>
             <artifactId>force-rest-api</artifactId>

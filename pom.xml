@@ -30,10 +30,12 @@
     <properties>
         <nifi.version>1.9.2</nifi.version>
 
-        <cometd.version>2.2.0</cometd.version>
+        <cometd.version>4.0.4</cometd.version>
         <json.version>20180813</json.version>
         <force-rest-api.version>0.0.46</force-rest-api.version>
+        <emp-connector.version>0.0.1</emp-connector.version>
         <commons-io.version>2.6</commons-io.version>
+        <jetty.version>9.4.18.v20190429</jetty.version>
         <!--<cometd.version>3.0.9</cometd.version>-->
     </properties>
 
