@@ -28,7 +28,6 @@
     <packaging>jar</packaging>
 
 
-
     <dependencies>
         <dependency>
             <groupId>com.pontusvision.salesforce</groupId>
@@ -40,16 +39,28 @@
             <artifactId>json</artifactId>
             <version>${json.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.nifi</groupId>
+            <artifactId>nifi-distributed-cache-client-service-api</artifactId>
+            <version>${nifi.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.nifi</groupId>
+            <artifactId>nifi-standard-services-api-nar</artifactId>
+            <version>${nifi.version}</version>
+            <type>nar</type>
+        </dependency>
 
         <!--<dependency>-->
-            <!--<groupId>com.force.api</groupId>-->
-            <!--<artifactId>force-wsc</artifactId>-->
-            <!--<version>46.1.0</version>-->
+        <!--<groupId>com.force.api</groupId>-->
+        <!--<artifactId>force-wsc</artifactId>-->
+        <!--<version>46.1.0</version>-->
         <!--</dependency>-->
         <!--<dependency>-->
-            <!--<groupId>com.force.api</groupId>-->
-            <!--<artifactId>force-partner-api</artifactId>-->
-            <!--<version>46.1.0</version>-->
+        <!--<groupId>com.force.api</groupId>-->
+        <!--<artifactId>force-partner-api</artifactId>-->
+        <!--<version>46.1.0</version>-->
         <!--</dependency>-->
 
         <dependency>
@@ -89,19 +100,19 @@
 
         <!-- CometD dependencies -->
         <!--<dependency>-->
-            <!--<groupId>org.cometd.java</groupId>-->
-            <!--<artifactId>bayeux-api</artifactId>-->
-            <!--<version>${cometd.version}</version>-->
+        <!--<groupId>org.cometd.java</groupId>-->
+        <!--<artifactId>bayeux-api</artifactId>-->
+        <!--<version>${cometd.version}</version>-->
         <!--</dependency>-->
         <!--<dependency>-->
-            <!--<groupId>org.cometd.java</groupId>-->
-            <!--<artifactId>cometd-java-client</artifactId>-->
-            <!--<version>${cometd.version}</version>-->
+        <!--<groupId>org.cometd.java</groupId>-->
+        <!--<artifactId>cometd-java-client</artifactId>-->
+        <!--<version>${cometd.version}</version>-->
         <!--</dependency>-->
         <!--<dependency>-->
-            <!--<groupId>org.cometd.java</groupId>-->
-            <!--<artifactId>cometd-java-common</artifactId>-->
-            <!--<version>${cometd.version}</version>-->
+        <!--<groupId>org.cometd.java</groupId>-->
+        <!--<artifactId>cometd-java-common</artifactId>-->
+        <!--<version>${cometd.version}</version>-->
         <!--</dependency>-->
 
         <dependency>

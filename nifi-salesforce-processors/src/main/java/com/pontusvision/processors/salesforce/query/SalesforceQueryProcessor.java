@@ -37,7 +37,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Tags({ "salesforce", "soql", "sobject", "query" })
-@CapabilityDescription("Executes the specified SOQL query")
+@CapabilityDescription("  Executes the specified SOQL query")
 public class SalesforceQueryProcessor
     extends AbstractSalesforceRESTOperation
 {
@@ -66,10 +66,10 @@ public class SalesforceQueryProcessor
   public void onTrigger(final ProcessContext context, final ProcessSession session) throws ProcessException
   {
     final FlowFile flowFile = session.get();
-    if (flowFile == null)
-    {
-      return;
-    }
+//    if (flowFile == null)
+//    {
+//      return;
+//    }
 
     if (sfAuthService == null)
     {
@@ -92,7 +92,7 @@ public class SalesforceQueryProcessor
       do
       {
         final QueryResult<String> queryResult = resp;
-        ff = session.create(flowFile);
+        ff = flowFile == null? session.create() : session.create(flowFile);
         ff = session.write(ff, outputStream -> outputStream.write(queryResult.getRawResults().getBytes()));
 
         ff = session.putAttribute(ff,"salesforce_api_url", sfAuthService.getApiEndpoint());
