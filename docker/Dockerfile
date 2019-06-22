@@ -1,7 +1,7 @@
 FROM maven:3.6-jdk-8-alpine as builder
 RUN apk add git && \
     cd / && \
-    git  clone --depth 1  --single-branch --branch master https://github.com/pontusvision/pontus-nifi-processors-salesforce.git && \
+    git  clone --depth 1  --single-branch --branch master https://github.com/pontus-vision/pontus-nifi-processors-salesforce.git && \
     cd pontus-nifi-processors-salesforce && \
     mvn clean package -U -DskipTests
 
