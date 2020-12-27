@@ -1,0 +1,6 @@
+.git
+**/target/
+target
+.idea
+*.iml
+build-docker.sh
