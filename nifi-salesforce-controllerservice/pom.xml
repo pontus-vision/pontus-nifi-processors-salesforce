@@ -19,7 +19,7 @@
     <parent>
         <groupId>com.pontusvision.salesforce</groupId>
         <artifactId>nifi-salesforce</artifactId>
-        <version>1.9.2</version>
+        <version>1.13.2</version>
     </parent>
 
     <artifactId>nifi-salesforce-controllerservice</artifactId>
@@ -35,7 +35,6 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>${json.version}</version>
         </dependency>
         <dependency>
             <groupId>com.pontusvision.salesforce</groupId>
@@ -75,4 +74,33 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
+  <build>
+   <pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0-M3</version>
+        <executions>
+          <execution>
+            <id>enforce-banned-dependencies</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <bannedDependencies>
+                  <excludes>
+                    <exclude>org.json</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+              <fail>false</fail>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+   </pluginManagement>
+  </build>
 </project>
